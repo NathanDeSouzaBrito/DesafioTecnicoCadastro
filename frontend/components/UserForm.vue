@@ -7,7 +7,6 @@ const emit = defineEmits<{ (e: "submit", payload: any): void }>();
 
 const router = useRouter();
 
-// Voltar à página anterior
 const goBack = () => router.back();
 
 // Form state
@@ -21,26 +20,23 @@ const user = ref({
   avatar: "" as string | null,
 });
 
-// Se receber `modelValue` (edição), inicializa o form com esses valores
 watch(
   () => props.modelValue,
   (v) => {
-    if (v) {
-      user.value = {
-        name: v.name || "",
-        email: v.email || "",
-        password: "",
-        confirmPassword: "",
-        cpf: v.cpf || "",
-        birthDate: v.birthDate || "",
-        avatar: v.avatarUrl || v.avatar || "",
-      };
-    }
+    if (!v) return;
+    user.value = {
+      name: v.name || "",
+      email: v.email || "",
+      password: "",
+      confirmPassword: "",
+      cpf: v.cpf || "",
+      birthDate: v.birthDate || "",
+      avatar: v.avatarUrl || v.avatar || "",
+    };
   },
   { immediate: true }
 );
 
-// Update image when selecting a new file
 const handleFile = (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
@@ -49,7 +45,6 @@ const handleFile = (e: Event) => {
   reader.readAsDataURL(file);
 };
 
-// Handle form submission: emite os dados para o pai
 const handleSubmit = (e: Event) => {
   e.preventDefault();
   if (user.value.password !== user.value.confirmPassword) {
@@ -66,14 +61,12 @@ const handleSubmit = (e: Event) => {
   });
 };
 
-// CPF input masking
 const maskCpf = (e: Event) => {
-  let value = (e.target as HTMLInputElement).value;
-  value = value.replace(/\D/g, "");
-  value = value.replace(/(\d{3})(\d)/, "$1.$2");
-  value = value.replace(/(\d{3})(\d)/, "$1.$2");
-  value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  user.value.cpf = value;
+  let v = (e.target as HTMLInputElement).value.replace(/\D/g, "");
+  v = v.replace(/(\d{3})(\d)/, "$1.$2");
+  v = v.replace(/(\d{3})(\d)/, "$1.$2");
+  v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  user.value.cpf = v;
 };
 </script>
 

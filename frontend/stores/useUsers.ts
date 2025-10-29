@@ -1,64 +1,67 @@
 import { defineStore } from "pinia";
 import api from "@/services/api";
 
-// Nomeado como `useUsers` para combinar com os imports nos componentes
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  password?: string;
+  cpf?: string;
+  birthDate?: string;
+  avatarUrl?: string | null;
+};
+
 export const useUsers = defineStore("users", {
   state: () => ({
-    users: [] as any[],
+    users: [] as User[],
   }),
 
   getters: {
-    // getter compatível com templates que usam `store.list`
-    list: (state) => state.users,
+    list: (s) => s.users,
   },
 
   actions: {
-    async fetchUsers() {
+    async fetchUsers(): Promise<void> {
       try {
-        const response = await api.get("/users");
-        this.users = response.data;
-      } catch (error) {
-        console.error("Erro ao buscar usuários:", error);
+        const { data } = await api.get<User[]>("/users");
+        this.users = data;
+      } catch (err) {
+        console.error("fetchUsers:", err);
       }
     },
 
-    async createUser(userData: any) {
+    async createUser(userData: Partial<User>): Promise<void> {
       try {
-        const response = await api.post("/users", userData);
-        this.users.push(response.data);
+        const { data } = await api.post<User>("/users", userData);
+        this.users.push(data);
         alert("Usuário cadastrado com sucesso!");
-      } catch (error: any) {
-        console.error("Erro ao criar usuário:", error?.response ?? error);
+      } catch (err: any) {
+        console.error("createUser:", err?.response ?? err);
         alert("Erro ao cadastrar usuário!");
       }
     },
 
-    // Mantém o nome original, mas também adiciona aliases para compatibilidade
-    async deleteUser(id: number | string) {
+    async deleteUser(id: number | string): Promise<void> {
       try {
-        const numericId = Number(id);
-        await api.delete(`/users/${numericId}`);
-        this.users = this.users.filter((u) => u.id !== numericId);
-      } catch (error) {
-        console.error("Erro ao excluir usuário:", error);
+        const nid = Number(id);
+        await api.delete(`/users/${nid}`);
+        this.users = this.users.filter((u) => u.id !== nid);
+      } catch (err) {
+        console.error("deleteUser:", err);
       }
     },
 
-    async update(id: number | string, userData: any) {
+    async update(id: number | string, userData: Partial<User>): Promise<void> {
       try {
-        const numericId = Number(id);
-        const response = await api.put(`/users/${numericId}`, userData);
-        // substituir o usuário localmente
-        this.users = this.users.map((u) =>
-          u.id === numericId ? response.data : u
-        );
-      } catch (error) {
-        console.error("Erro ao atualizar usuário:", error);
+        const nid = Number(id);
+        const { data } = await api.put<User>(`/users/${nid}`, userData);
+        this.users = this.users.map((u) => (u.id === nid ? data : u));
+      } catch (err) {
+        console.error("update:", err);
       }
     },
 
-    // Alias compatível com componentes que chamam `store.add` ou `store.remove`
-    add(userData: any) {
+    add(userData: Partial<User>) {
       return this.createUser(userData);
     },
 
