@@ -41,36 +41,27 @@ desafioTecnico/
 
 > Nota: o projeto padrão usa as credenciais e porta definidas em `backend/src/index.ts` (user: `postgres`, password: `123456`, database: `cruddb`, port: `5432`). Ajuste conforme sua máquina.
 
-## Como rodar (Windows / PowerShell)
+## Como rodar (Windows / PowerShell ou Docker Compose)
 
-1. Inicie o banco de dados PostgreSQL (local ou via Docker). Se preferir Docker compose:
+docker-compose up -d
+
+### Docker Compose
+
+Com um único comando, todos os serviços sobem juntos (banco, backend, frontend, pgadmin):
 
 ```powershell
 # na raiz do repositório
-docker-compose up -d
+docker-compose up --build
 ```
 
-2. Backend
+Depois:
 
-```powershell
-cd C:\Users\desco\desafioTecnico\backend
-npm install
-npm run dev
-```
+- Frontend: http://localhost:3000
+- Backend: http://localhost:4000
+- Banco: localhost:5432 (usuário: postgres, senha: 123456)
+- PgAdmin: http://localhost:5050 (login: admin@admin.com / admin)
 
-O backend irá iniciar em http://localhost:4000
-
-3. Frontend
-
-```powershell
-cd C:\Users\desco\desafioTecnico\frontend
-npm install
-npm run dev
-```
-
-O Nuxt normalmente roda em http://localhost:3000 (o terminal mostra a porta exata).
-
-## Observações sobre imagens
+## Sobre o cadastro com imagem
 
 - No formulário de cadastro, ao escolher uma imagem o cliente converte para Data URL (base64) e envia no campo `avatarUrl`.
 - O backend aceita esse campo como `TEXT` no PostgreSQL (coluna `avatarUrl`) e retorna o mesmo valor no JSON. Em produção é preferível salvar arquivos reais (S3 / disco) e retornar URLs curtas.
@@ -85,8 +76,7 @@ O Nuxt normalmente roda em http://localhost:3000 (o terminal mostra a porta exat
 - `frontend/components/UserForm.vue` — componente apresentacional para criar/editar usuários; emite `submit` para o pai.
 - `frontend/pages/users/index.vue` — lista de usuários; exibe avatar (se houver) ou placeholder com iniciais.
 
-
-## Como revisar o código rapidamente (******* Para Recrutador ******)
+## Como revisar o código rapidamente (**\*\*\*** Para Recrutador **\*\***)
 
 - Rode `npm run dev` no backend e frontend e abra a interface em `/users`.
 - Veja `frontend/components/UserForm.vue` para entender como o formulário constrói o payload.
