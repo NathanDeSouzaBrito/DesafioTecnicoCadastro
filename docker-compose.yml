@@ -3,7 +3,6 @@ version: "3.8"
 services:
   db:
     image: postgres:15
-    container_name: postgres_db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -12,19 +11,45 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   pgadmin:
-    image: dpage/pgadmin4:8
-    container_name: pgadmin_panel
+    image: dpage/pgadmin4
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
-    depends_on:
-      - db
     ports:
       - "5050:80"
+    depends_on:
+      - db
+
+  backend:
+    build:
+      context: ./backend
+    restart: always
+    environment:
+      PGUSER: postgres
+      PGPASSWORD: 123456
+      PGDATABASE: cruddb
+      PGHOST: db
+      PGPORT: 5432
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    command: sh -c "npm install && npm run dev"
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    command: sh -c "npm install && npm run dev"
 
 volumes:
-  pgdata:
+  db_data:

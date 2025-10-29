@@ -32,7 +32,7 @@ const deleteUser = (id: string | number) => {
   }
 };
 
-// Retorna iniciais simples para placeholder quando não há imagem
+// Returns simple initials for placeholder when there is no image
 const getInitials = (name?: string) => {
   if (!name) return "?";
   const parts = name.trim().split(/\s+/).filter(Boolean);

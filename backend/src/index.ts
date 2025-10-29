@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 const pool = new Pool({
   user: "postgres",
-  host: "localhost",
+  host: process.env.PGHOST || "db",
   database: "cruddb",
   password: "123456",
   port: 5432,
@@ -59,5 +59,5 @@ app.delete("/users/:id", async (req, res) => {
 });
 
 app.listen(4000, () => {
-  console.log("🚀 API rodando em http://localhost:4000");
+  console.log(" API rodando em http://localhost:4000");
 });
